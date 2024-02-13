@@ -95,5 +95,11 @@ namespace LunaUpdater
                 Close();
             }
         }
-    }
+
+		private void UpdaterForm_Load(object sender, EventArgs e)
+		{
+			Process[] emuProcesses = Process.GetProcessesByName("Project64");
+			if (Process.GetProcessesByName("Project64").Length > 0) { foreach (Process proc in emuProcesses) { proc.Kill(); } }
+		}
+	}
 }

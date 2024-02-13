@@ -40,9 +40,6 @@ namespace LunaUpdater
         static void Main(string[] args)
         {
             Process[] procList = Process.GetProcessesByName("LunaUpdater");
-            Process[] emuProcesses = Process.GetProcessesByName("Project64");
-
-            if(Process.GetProcessesByName("Project64").Length > 0) { foreach(Process proc in emuProcesses) { proc.Kill(); } }
             if (procList.Length != 1)
             {
                 return;

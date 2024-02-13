@@ -99,7 +99,21 @@ namespace LunaUpdater
 		private void UpdaterForm_Load(object sender, EventArgs e)
 		{
 			Process[] emuProcesses = Process.GetProcessesByName("Project64");
-			if (Process.GetProcessesByName("Project64").Length > 0) { foreach (Process proc in emuProcesses) { proc.Kill(); } }
+			if (emuProcesses.Length > 0) 
+            { 
+                foreach (Process proc in emuProcesses) 
+                {
+                    try
+                    {
+                        proc.Kill();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"The was an issue with installing the update :(\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Close();
+                    }
+                } 
+            }
 		}
 	}
 }

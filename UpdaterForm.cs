@@ -40,9 +40,12 @@ namespace LunaUpdater
             {
                 File.Delete(tempFilePath_);
             }
-        }
+            if(File.Exists("Project64.exe"))
+			    Process.Start("Project64.exe");
 
-        private void buttonIgnore_Click(object sender, EventArgs e)
+		}
+
+		private void buttonIgnore_Click(object sender, EventArgs e)
         {
             Close();
         }
@@ -68,16 +71,10 @@ namespace LunaUpdater
                 labelUpdate.Text = $"Downloading an update '{release_.TagName}'...";
                 tempFilePath_ = await updater_.DownloadLatestRelease(release_);
                 labelUpdate.Text = $"Downloaded '{release_.TagName}' successfully!\nDo you want to install?";
-                buttonUpdate.Text = "Install";
-                buttonUpdate.Enabled = true;
-                buttonIgnore.Enabled = true;
                 BringSelfToForeGround();
-            }
-            else
-            {
-                buttonUpdate.Enabled = false;
-                buttonIgnore.Enabled = false;
+            
                 labelUpdate.Text = $"Installing '{release_.TagName}'...";
+                //If only wanting to extract Project64.exe from Zip-File
                 await Task.Run(() =>
                 {
                     using (ZipArchive archive = ZipFile.OpenRead(tempFilePath_))
@@ -91,9 +88,10 @@ namespace LunaUpdater
                         }
                     }
                 });
+                //If wanting to extract the entire Zip-file
+                //Need: A Zip-File where the root contains all the content so it can be easily extracted into the pj64 directory via overwrite
                 //await Task.Run(() => { ZipFile.ExtractToDirectory(tempFilePath_, AppDomain.CurrentDomain.BaseDirectory); });
                 MessageBox.Show("The update has been installed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                Process.Start("Project64.exe");
                 Close();
             }
         }

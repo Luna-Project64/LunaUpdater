@@ -78,8 +78,22 @@ namespace LunaUpdater
                 buttonUpdate.Enabled = false;
                 buttonIgnore.Enabled = false;
                 labelUpdate.Text = $"Installing '{release_.TagName}'...";
-                await Task.Run(() => { ZipFile.ExtractToDirectory(tempFilePath_, AppDomain.CurrentDomain.BaseDirectory); });
+                await Task.Run(() =>
+                {
+                    using (ZipArchive archive = ZipFile.OpenRead(tempFilePath_))
+                    {
+                        foreach (ZipArchiveEntry entry in archive.Entries)
+                        {
+                            if (entry.Name == "Project64.exe")
+                            {
+                                entry.ExtractToFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, entry.Name), true);
+                            }
+                        }
+                    }
+                });
+                //await Task.Run(() => { ZipFile.ExtractToDirectory(tempFilePath_, AppDomain.CurrentDomain.BaseDirectory); });
                 MessageBox.Show("The update has been installed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Process.Start("Project64.exe");
                 Close();
             }
         }

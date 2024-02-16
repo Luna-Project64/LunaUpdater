@@ -48,13 +48,21 @@ namespace LunaUpdater
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
             string version = args.Count() == 0 ? null : args[0];
-            var form = MakeForm(version);
-            if (form == null)
+            try
             {
-                return;
-            }
+                var form = MakeForm(version);
+                if (form == null)
+                {
+                    return;
+                }
 
-            Application.Run(form);
+                Application.Run(form);
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("The Update could not be installed :(\nReason: The Update could not be downloaded successfully", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

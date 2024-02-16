@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using Octokit;
 
 namespace LunaUpdater
@@ -40,14 +41,12 @@ namespace LunaUpdater
             {
                 File.Delete(tempFilePath_);
             }
-            if(File.Exists("Project64.exe"))
-			    Process.Start("Project64.exe");
+        }
 
-		}
-
-		private void buttonIgnore_Click(object sender, EventArgs e)
+        private void buttonIgnore_Click(object sender, EventArgs e)
         {
             Close();
+            Process.Start("Project64.exe");
         }
 
         static void BringSelfToForeGround()
@@ -71,6 +70,7 @@ namespace LunaUpdater
                 labelUpdate.Text = $"Downloading an update '{release_.TagName}'...";
                 tempFilePath_ = await updater_.DownloadLatestRelease(release_);
                 labelUpdate.Text = $"Downloaded '{release_.TagName}' successfully!\nDo you want to install?";
+                buttonUpdate.Text = "Install";
                 BringSelfToForeGround();
             
                 labelUpdate.Text = $"Installing '{release_.TagName}'...";
@@ -83,37 +83,47 @@ namespace LunaUpdater
                         {
                             if (entry.Name == "Project64.exe")
                             {
-                                entry.ExtractToFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, entry.Name), true);
+                                try
+                                {
+                                    entry.ExtractToFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, entry.Name), true);
+                                }
+                                catch (Exception)
+                                {
+                                    MessageBox.Show("The Update could not be installed :(\nReason: The Files could not be extracted successfully.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    Close();
+                                }
+                                
                             }
                         }
                     }
                 });
-                //If wanting to extract the entire Zip-file
-                //Need: A Zip-File where the root contains all the content so it can be easily extracted into the pj64 directory via overwrite
+                //If wanting to extract the entire Zip-File
+                //Need: A Zip-File where the root contains all the content so it can easily be extracted into the pj64 directory via overwrite
                 //await Task.Run(() => { ZipFile.ExtractToDirectory(tempFilePath_, AppDomain.CurrentDomain.BaseDirectory); });
                 MessageBox.Show("The update has been installed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Close();
+                Process.Start("Project64.exe");
             }
         }
 
-		private void UpdaterForm_Load(object sender, EventArgs e)
-		{
-			Process[] emuProcesses = Process.GetProcessesByName("Project64");
-			if (emuProcesses.Length > 0) 
-            { 
-                foreach (Process proc in emuProcesses) 
+        private void UpdaterForm_Load(object sender, EventArgs e)
+        {
+            Process[] emuProcesses = Process.GetProcessesByName("Project64");
+            if(emuProcesses.Length > 0)
+            {
+                foreach(Process emuProcess in emuProcesses)
                 {
                     try
                     {
-                        proc.Kill();
+                        emuProcess.Kill();
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        MessageBox.Show($"The was an issue with installing the update :(\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"The Update could not be installed :(\nReason: Not all Project64 instances could be killed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         Close();
                     }
-                } 
+                }
             }
-		}
-	}
+        }
+    }
 }

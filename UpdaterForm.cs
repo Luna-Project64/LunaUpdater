@@ -46,7 +46,6 @@ namespace LunaUpdater
         private void buttonIgnore_Click(object sender, EventArgs e)
         {
             Close();
-            Process.Start("Project64.exe");
         }
 
         static void BringSelfToForeGround()

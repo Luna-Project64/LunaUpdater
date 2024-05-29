@@ -31,6 +31,7 @@
             this.labelUpdate = new System.Windows.Forms.Label();
             this.buttonUpdate = new System.Windows.Forms.Button();
             this.buttonIgnore = new System.Windows.Forms.Button();
+            this.changelogLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // labelUpdate
@@ -44,7 +45,7 @@
             // 
             // buttonUpdate
             // 
-            this.buttonUpdate.Location = new System.Drawing.Point(12, 51);
+            this.buttonUpdate.Location = new System.Drawing.Point(12, 161);
             this.buttonUpdate.Name = "buttonUpdate";
             this.buttonUpdate.Size = new System.Drawing.Size(75, 23);
             this.buttonUpdate.TabIndex = 1;
@@ -54,7 +55,7 @@
             // 
             // buttonIgnore
             // 
-            this.buttonIgnore.Location = new System.Drawing.Point(99, 51);
+            this.buttonIgnore.Location = new System.Drawing.Point(104, 161);
             this.buttonIgnore.Name = "buttonIgnore";
             this.buttonIgnore.Size = new System.Drawing.Size(75, 23);
             this.buttonIgnore.TabIndex = 2;
@@ -62,11 +63,21 @@
             this.buttonIgnore.UseVisualStyleBackColor = true;
             this.buttonIgnore.Click += new System.EventHandler(this.buttonIgnore_Click);
             // 
+            // changelogLabel
+            // 
+            this.changelogLabel.AutoSize = true;
+            this.changelogLabel.Location = new System.Drawing.Point(13, 60);
+            this.changelogLabel.Name = "changelogLabel";
+            this.changelogLabel.Size = new System.Drawing.Size(0, 13);
+            this.changelogLabel.TabIndex = 3;
+            // 
             // UpdaterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(186, 87);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(203, 196);
+            this.Controls.Add(this.changelogLabel);
             this.Controls.Add(this.buttonIgnore);
             this.Controls.Add(this.buttonUpdate);
             this.Controls.Add(this.labelUpdate);
@@ -76,7 +87,6 @@
             this.Name = "UpdaterForm";
             this.ShowIcon = false;
             this.Text = "Luna Updater";
-            this.Load += new System.EventHandler(this.UpdaterForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -87,6 +97,7 @@
         private System.Windows.Forms.Label labelUpdate;
         private System.Windows.Forms.Button buttonUpdate;
         private System.Windows.Forms.Button buttonIgnore;
+        private System.Windows.Forms.Label changelogLabel;
     }
 }
 

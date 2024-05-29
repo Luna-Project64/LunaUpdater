@@ -32,6 +32,7 @@ namespace LunaUpdater
             release_ = release;
             updater_ = updater;
             labelUpdate.Text = "New version available: " + release_.TagName + "\nDo you want to update?";
+            changelogLabel.Text = release_.Body;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -73,39 +74,18 @@ namespace LunaUpdater
                 BringSelfToForeGround();
             
                 labelUpdate.Text = $"Installing '{release_.TagName}'...";
-                //If only wanting to extract Project64.exe from Zip-File
-                await Task.Run(() =>
-                {
-                    using (ZipArchive archive = ZipFile.OpenRead(tempFilePath_))
-                    {
-                        foreach (ZipArchiveEntry entry in archive.Entries)
-                        {
-                            if (entry.Name == "Project64.exe")
-                            {
-                                try
-                                {
-                                    entry.ExtractToFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, entry.Name), true);
-                                }
-                                catch (Exception)
-                                {
-                                    MessageBox.Show("The Update could not be installed :(\nReason: The Files could not be extracted successfully.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    Close();
-                                }
-                                
-                            }
-                        }
-                    }
+                
+                await Task.Run(() => { 
+                    KillAllProject64s();
+                    ExtractFiles();
                 });
-                //If wanting to extract the entire Zip-File
-                //Need: A Zip-File where the root contains all the content so it can easily be extracted into the pj64 directory via overwrite
-                //await Task.Run(() => { ZipFile.ExtractToDirectory(tempFilePath_, AppDomain.CurrentDomain.BaseDirectory); });
                 MessageBox.Show("The update has been installed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Close();
                 Process.Start("Project64.exe");
             }
         }
 
-        private void UpdaterForm_Load(object sender, EventArgs e)
+        private void KillAllProject64s()
         {
             Process[] emuProcesses = Process.GetProcessesByName("Project64");
             if(emuProcesses.Length > 0)
@@ -118,11 +98,67 @@ namespace LunaUpdater
                     }
                     catch (Exception)
                     {
-                        MessageBox.Show($"The Update could not be installed :(\nReason: Not all Project64 instances could be killed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Close();
                     }
                 }
             }
+        }
+
+        /*
+         * TODO:
+         * figure out a way to dynamicly get the name of the root folder
+         * Exeception handling
+         */
+        private void ExtractFiles()
+        {
+            const string rootFolderName = "Project64 3.0";
+            const string emulatorExecuteable = "Project64.exe";
+
+            //Extract Root of Zip-File into the App's Directory
+            ZipFile.ExtractToDirectory(tempFilePath_, AppDomain.CurrentDomain.BaseDirectory);
+
+            //Get Current Directory
+            string currentDirectory = Directory.GetCurrentDirectory();
+
+            //Find the Directory of the extracted folder in which the emulator executeable lies
+            string[] emulator = Directory.GetFiles(Path.Combine(currentDirectory, rootFolderName), emulatorExecuteable, SearchOption.AllDirectories);
+            string directoryPath = Path.GetDirectoryName(emulator[0]);
+
+            //Get All Files in the executeable directory
+            string[] files = Directory.GetFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly);
+
+            //Iterate through all the files
+            foreach (string file in files)
+            {
+                //Get Filename
+                string fileName = Path.GetFileName(file);
+
+                //Build a Path where the file should be moved to
+                string destinationFile = Path.Combine(currentDirectory, fileName);
+
+                //Overwrite the File when moving
+                if(File.Exists(destinationFile))
+                {
+                    File.Delete(destinationFile);
+                }
+                    File.Move(file, destinationFile);
+            }
+
+            //Get all the folders in the executeable directory
+            string[] directories = Directory.GetDirectories(directoryPath, "*", SearchOption.TopDirectoryOnly);
+
+            //Iterate through the list of directories and move it to the App's Directory
+            foreach (string dir in directories)
+            {
+                string dirName = Path.GetFileName(dir);
+                string destinationDir = Path.Combine(currentDirectory, dirName);
+
+                if(!Directory.Exists(destinationDir))
+                {
+                    Directory.Move(dir, destinationDir);
+                }
+            }
+            //Delete the extracted root folder
+            Directory.Delete(Path.Combine(currentDirectory, rootFolderName), true);
         }
     }
 }

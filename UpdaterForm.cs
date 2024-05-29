@@ -73,39 +73,17 @@ namespace LunaUpdater
                 BringSelfToForeGround();
             
                 labelUpdate.Text = $"Installing '{release_.TagName}'...";
-                //If only wanting to extract Project64.exe from Zip-File
-                await Task.Run(() =>
-                {
-                    using (ZipArchive archive = ZipFile.OpenRead(tempFilePath_))
-                    {
-                        foreach (ZipArchiveEntry entry in archive.Entries)
-                        {
-                            if (entry.Name == "Project64.exe")
-                            {
-                                try
-                                {
-                                    entry.ExtractToFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, entry.Name), true);
-                                }
-                                catch (Exception)
-                                {
-                                    MessageBox.Show("The Update could not be installed :(\nReason: The Files could not be extracted successfully.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    Close();
-                                }
-                                
-                            }
-                        }
-                    }
+                await Task.Run(() => { 
+                    KillAllProject64s();
+                    ZipFile.ExtractToDirectory(tempFilePath_, AppDomain.CurrentDomain.BaseDirectory); 
                 });
-                //If wanting to extract the entire Zip-File
-                //Need: A Zip-File where the root contains all the content so it can easily be extracted into the pj64 directory via overwrite
-                //await Task.Run(() => { ZipFile.ExtractToDirectory(tempFilePath_, AppDomain.CurrentDomain.BaseDirectory); });
                 MessageBox.Show("The update has been installed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Close();
                 Process.Start("Project64.exe");
             }
         }
 
-        private void UpdaterForm_Load(object sender, EventArgs e)
+        private void KillAllProject64s()
         {
             Process[] emuProcesses = Process.GetProcessesByName("Project64");
             if(emuProcesses.Length > 0)
@@ -117,10 +95,7 @@ namespace LunaUpdater
                         emuProcess.Kill();
                     }
                     catch (Exception)
-                    {
-                        MessageBox.Show($"The Update could not be installed :(\nReason: Not all Project64 instances could be killed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Close();
-                    }
+                    { }
                 }
             }
         }

@@ -9,7 +9,7 @@ namespace LunaUpdater
 {
     public class Updater
     {
-        readonly string repositoryOwner = "LunaticShiN3";
+        readonly string repositoryOwner = "Luna-Project64";
         readonly string repositoryName = "Luna-Project64";
         readonly GitHubClient github_ = new GitHubClient(new ProductHeaderValue("LunaUpdater"));
         

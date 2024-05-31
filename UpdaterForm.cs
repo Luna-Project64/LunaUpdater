@@ -61,6 +61,11 @@ namespace LunaUpdater
             SetForegroundWindow(procList[0].MainWindowHandle);
         }
 
+        private void onProgress(object sender, float progress)
+        {
+            labelUpdate.Text = $"Downloading '{release_.TagName}'... {progress:P0}";
+        }
+
         private async void buttonUpdate_Click(object sender, EventArgs e)
         {
             if (tempFilePath_ == null)
@@ -68,7 +73,7 @@ namespace LunaUpdater
                 buttonUpdate.Enabled = false;
                 buttonIgnore.Enabled = false;
                 labelUpdate.Text = $"Downloading an update '{release_.TagName}'...";
-                tempFilePath_ = await updater_.DownloadLatestRelease(release_);
+                tempFilePath_ = await updater_.DownloadLatestRelease(release_, onProgress);
                 labelUpdate.Text = $"Downloaded '{release_.TagName}' successfully!\nDo you want to install?";
                 buttonUpdate.Text = "Install";
                 BringSelfToForeGround();
@@ -114,51 +119,29 @@ namespace LunaUpdater
             const string emulatorExecuteable = "Project64.exe";
 
             //Extract Root of Zip-File into the App's Directory
-            ZipFile.ExtractToDirectory(tempFilePath_, AppDomain.CurrentDomain.BaseDirectory);
-
-            //Get Current Directory
-            string currentDirectory = Directory.GetCurrentDirectory();
-
-            //Find the Directory of the extracted folder in which the emulator executeable lies
-            string[] emulator = Directory.GetFiles(Path.Combine(currentDirectory, rootFolderName), emulatorExecuteable, SearchOption.AllDirectories);
-            string directoryPath = Path.GetDirectoryName(emulator[0]);
-
-            //Get All Files in the executeable directory
-            string[] files = Directory.GetFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly);
-
-            //Iterate through all the files
-            foreach (string file in files)
+            using (var strm = File.OpenRead(tempFilePath_))
+            using (ZipArchive archive = new ZipArchive(strm))
             {
-                //Get Filename
-                string fileName = Path.GetFileName(file);
-
-                //Build a Path where the file should be moved to
-                string destinationFile = Path.Combine(currentDirectory, fileName);
-
-                //Overwrite the File when moving
-                if(File.Exists(destinationFile))
+                foreach (ZipArchiveEntry file in archive.Entries)
                 {
-                    File.Delete(destinationFile);
-                }
-                    File.Move(file, destinationFile);
-            }
+                    string completeFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file.FullName);
+                    string directory = Path.GetDirectoryName(completeFileName);
 
-            //Get all the folders in the executeable directory
-            string[] directories = Directory.GetDirectories(directoryPath, "*", SearchOption.TopDirectoryOnly);
+                    if (!Directory.Exists(directory))
+                        Directory.CreateDirectory(directory);
 
-            //Iterate through the list of directories and move it to the App's Directory
-            foreach (string dir in directories)
-            {
-                string dirName = Path.GetFileName(dir);
-                string destinationDir = Path.Combine(currentDirectory, dirName);
-
-                if(!Directory.Exists(destinationDir))
-                {
-                    Directory.Move(dir, destinationDir);
+                    if (file.Name != "")
+                    {
+                        try
+                        {
+                            file.ExtractToFile(completeFileName, true);
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
                 }
             }
-            //Delete the extracted root folder
-            Directory.Delete(Path.Combine(currentDirectory, rootFolderName), true);
         }
     }
 }

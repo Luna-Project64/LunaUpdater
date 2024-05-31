@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using HttpClientProgress;
 using Octokit;
 
 namespace LunaUpdater
@@ -38,7 +39,7 @@ namespace LunaUpdater
             }
         }
 
-        public async Task<string> DownloadLatestRelease(Release release)
+        public async Task<string> DownloadLatestRelease(Release release, EventHandler<float> onProgress)
         {
             var assets = await github_.Repository.Release.GetAllAssets(repositoryOwner, repositoryName, release.Id);
             var asset = assets.FirstOrDefault();
@@ -51,20 +52,15 @@ namespace LunaUpdater
             using (HttpClient httpClient = new HttpClient())
             {
                 httpClient.Timeout = TimeSpan.FromMinutes(30);
-                // Download the zip file to a temporary location asynchronously
-                using (HttpResponseMessage response = await httpClient.GetAsync(url))
-                {
-                    response.EnsureSuccessStatusCode();
 
-                    string tempFilePath = Path.GetTempFileName();
-                    using (FileStream fileStream = File.OpenWrite(tempFilePath))
-                    using (Stream contentStream = await response.Content.ReadAsStreamAsync())
-                    {
-                        await contentStream.CopyToAsync(fileStream);
-                    }
+                var progress = new Progress<float>();
+                progress.ProgressChanged += onProgress;
 
-                    return tempFilePath;
-                }
+                var tempFile = Path.GetTempFileName();
+                using (var file = new FileStream(tempFile, System.IO.FileMode.Create, FileAccess.Write, FileShare.None))
+                    await httpClient.DownloadDataAsync(url, file, progress);
+
+                return tempFile;
             }
         }
     }

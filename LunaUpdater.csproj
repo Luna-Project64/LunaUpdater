@@ -84,6 +84,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Binaries.resx</DependentUpon>
     </Compile>
+    <Compile Include="HttpClientProgressExtensions.cs" />
     <Compile Include="Updater.cs" />
     <Compile Include="UpdaterForm.cs">
       <SubType>Form</SubType>

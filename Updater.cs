@@ -50,6 +50,7 @@ namespace LunaUpdater
             var url = asset.BrowserDownloadUrl;
             using (HttpClient httpClient = new HttpClient())
             {
+                httpClient.Timeout = TimeSpan.FromMinutes(30);
                 // Download the zip file to a temporary location asynchronously
                 using (HttpResponseMessage response = await httpClient.GetAsync(url))
                 {

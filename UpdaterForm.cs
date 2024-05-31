@@ -70,7 +70,7 @@ namespace LunaUpdater
 
         private void onProgress(object sender, float progress)
         {
-            labelUpdate.Text = $"Downloading '{release_.TagName}'... {progress:P0}";
+            labelUpdate.Text = $"Downloading '{release_.TagName}'... {progress / 100:P0}";
         }
 
         private async void buttonUpdate_Click(object sender, EventArgs e)

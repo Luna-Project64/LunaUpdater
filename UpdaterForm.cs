@@ -25,13 +25,20 @@ namespace LunaUpdater
         readonly Updater updater_;
         string tempFilePath_;
 
-        public UpdaterForm(Updater updater, Release release)
+        public UpdaterForm(Updater updater, Release release, string curVersion)
         {
             InitializeComponent();
 
             release_ = release;
             updater_ = updater;
-            labelUpdate.Text = "New version available: " + release_.TagName + "\nDo you want to update?";
+            if (curVersion == null)
+            {
+                labelUpdate.Text = "New version available: " + release_.TagName + "\nDo you want to update?";
+            }
+            else
+            {
+                labelUpdate.Text = "New version available: " + release_.TagName + ". Current version is " + curVersion + "\nDo you want to update?";
+            }
             changelogLabel.Text = release_.Body;
         }
 

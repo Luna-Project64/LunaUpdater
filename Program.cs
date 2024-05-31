@@ -31,7 +31,7 @@ namespace LunaUpdater
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            return new UpdaterForm(updater, release);
+            return new UpdaterForm(updater, release, version);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace LunaUpdater
 
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
-            string version = args.Count() == 0 ? null : args[0];
+            string version = args.Count() < 1 ? null : args[1];
             try
             {
                 var form = MakeForm(version);

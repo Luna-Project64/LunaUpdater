@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -39,6 +40,14 @@ namespace LunaUpdater
         [STAThread]
         static void Main(string[] args)
         {
+            try
+            {
+                string tmpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LunaUpdater.exe.tmp");
+                File.Delete(tmpPath);
+            }
+            catch (Exception)
+            { }
+
             Process[] procList = Process.GetProcessesByName("LunaUpdater");
             if (procList.Length != 1)
             {

@@ -115,10 +115,6 @@ namespace LunaUpdater
          */
         private void ExtractFiles()
         {
-            const string rootFolderName = "Project64 3.0";
-            const string emulatorExecuteable = "Project64.exe";
-
-            //Extract Root of Zip-File into the App's Directory
             using (var strm = File.OpenRead(tempFilePath_))
             using (ZipArchive archive = new ZipArchive(strm))
             {
@@ -134,7 +130,16 @@ namespace LunaUpdater
                     {
                         try
                         {
-                            file.ExtractToFile(completeFileName, true);
+                            if (file.Name == "LunaUpdater.exe")
+                            {
+                                File.Delete(completeFileName + ".tmp");
+                                File.Move(completeFileName, completeFileName + ".tmp");
+                                file.ExtractToFile(completeFileName, true);
+                            }
+                            else
+                            {
+                                file.ExtractToFile(completeFileName, true);
+                            }
                         }
                         catch (Exception)
                         {
@@ -142,6 +147,8 @@ namespace LunaUpdater
                     }
                 }
             }
+
+            File.Delete(tempFilePath_);
         }
     }
 }

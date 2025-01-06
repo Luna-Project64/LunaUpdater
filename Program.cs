@@ -42,7 +42,7 @@ namespace LunaUpdater
         {
             try
             {
-                string tmpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LunaUpdater.exe.tmp");
+                string tmpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LunaU.exe.tmp");
                 File.Delete(tmpPath);
             }
             catch (Exception)

@@ -48,7 +48,7 @@ namespace LunaUpdater
             catch (Exception)
             { }
 
-            Process[] procList = Process.GetProcessesByName("LunaUpdater");
+            Process[] procList = Process.GetProcessesByName("LunaU");
             if (procList.Length != 1)
             {
                 return;

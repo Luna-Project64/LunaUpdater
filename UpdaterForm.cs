@@ -58,7 +58,7 @@ namespace LunaUpdater
 
         static void BringSelfToForeGround()
         {
-            Process[] procList = Process.GetProcessesByName("LunaUpdater");
+            Process[] procList = Process.GetProcessesByName("LunaU");
             if (procList.Length == 0)
             {
                 return;
@@ -137,7 +137,7 @@ namespace LunaUpdater
                     {
                         try
                         {
-                            if (file.Name == "LunaUpdater.exe")
+                            if (file.Name == "LunaU.exe")
                             {
                                 File.Delete(completeFileName + ".tmp");
                                 File.Move(completeFileName, completeFileName + ".tmp");

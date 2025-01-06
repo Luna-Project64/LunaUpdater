@@ -62,8 +62,8 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Octokit, Version=9.1.2.0, Culture=neutral, PublicKeyToken=0be8860aee462442, processorArchitecture=MSIL">
-      <HintPath>packages\Octokit.9.1.2\lib\netstandard2.0\Octokit.dll</HintPath>
+    <Reference Include="Octokit, Version=13.0.1.0, Culture=neutral, PublicKeyToken=0be8860aee462442, processorArchitecture=MSIL">
+      <HintPath>packages\Octokit.13.0.1\lib\netstandard2.0\Octokit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -139,7 +139,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages\Octokit.9.1.2\lib\netstandard2.0\Octokit.dll" />
+    <None Include="packages\Octokit.13.0.1\lib\netstandard2.0\Octokit.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

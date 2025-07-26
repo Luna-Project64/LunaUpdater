@@ -14,7 +14,7 @@ namespace LunaUpdater
         readonly string repositoryName = "Luna-Project64";
         readonly GitHubClient github_ = new GitHubClient(new ProductHeaderValue("LunaUpdater"));
         
-        public async Task<Release> HasNewVersion(string currentVersion)
+        public async Task<Release> HasNewVersion(string currentVersionString)
         {
             var releases = await github_.Repository.Release.GetAll(repositoryOwner, repositoryName, new ApiOptions() { PageSize = 5, PageCount = 1 });
             var latestRelease = releases.FirstOrDefault();
@@ -23,12 +23,15 @@ namespace LunaUpdater
                 return null;
             }
 
-            if (currentVersion == null)
+            if (currentVersionString == null)
             {
                 return latestRelease;
             }
 
-            bool hasNewVersion = string.Compare(latestRelease.TagName, currentVersion, StringComparison.OrdinalIgnoreCase) > 0;
+            var latestReleaseVersion = new Version(latestRelease.TagName.TrimStart('v'));
+            var currentVersion = new Version(currentVersionString.TrimStart('v'));
+
+            bool hasNewVersion = latestReleaseVersion > currentVersion;
             if (!hasNewVersion)
             {
                 return null;
